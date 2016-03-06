@@ -5,7 +5,7 @@ byte mem[7][20];// 7 rows, 80 bits = 10 bytes green, 80 bits = 10 bytes red
 
 seven_eighty_rg::seven_eighty_rg(byte a, byte b, byte c, byte ss, boolean dbuf) :
     Apin(a), Bpin(b), Cpin(c), SSpin(ss),
-    Adafruit_GFX(WIDTH, HEIGHT)
+    Adafruit_GFX(80, 7)
 {
 }
 
@@ -21,7 +21,7 @@ void seven_eighty_rg::begin(void)
 
 void seven_eighty_rg::drawPixel(int16_t x, int16_t y, uint16_t c)
 {
-  if ((x < 0) || (x >= WIDTH) || (y < 0) || (y >= HEIGHT)) return;
+  if ((x < 0) || (x >= _width) || (y < 0) || (y >= _width)) return;
   if (c & 1)
   {
     bitSet(mem[y][(x >> 3)<<1], x & 0x7);

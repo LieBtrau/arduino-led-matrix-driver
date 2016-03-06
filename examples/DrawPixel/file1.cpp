@@ -2,29 +2,38 @@
 #include <SPI.h>
 #include "seven_eighty_rg.h"
 
-byte x=0;
+// Similar to F(), but for PROGMEM string pointers rather than literals
+#define F2(progmem_ptr) (const __FlashStringHelper *)progmem_ptr
+
+seven_eighty_rg matrix(4,5,6,7, false);
+const char str[] PROGMEM = "Adafruit 16x32 RGB LED Matrix";
+
 //Dpin must be kept low at all times to enable LEDs
-seven_eighty_rg ledMatrix(4,5,6,7, false);
-unsigned long starttime;
 
 void setup() {
     // put your setup code here, to run once:
-  Serial.begin(9600);
-  ledMatrix.begin();
+    Serial.begin(9600);
+    Serial.println("Started");
+    matrix.begin();
+    matrix.setTextWrap(false); // Allow text to run off right edge
+    matrix.setTextSize(1);
+    matrix.setTextColor(matrix.ORANGE);
+    matrix.drawLine(0,0,79,6,matrix.RED);
+    matrix.drawCircle(40, 3, 3, matrix.GREEN);
+    matrix.setFont();
+    matrix.drawChar(0, 0, 'a',matrix.ORANGE, matrix.BLACK, 1);
 }
 
 
 void loop() {
-  // put your main code here, to run repeatedly:
-  if(millis()>starttime+1000)
-  {
-      starttime=millis();
-      ledMatrix.drawPixel(x++,3,ledMatrix.ORANGE);
-      if(x==80)
-      {
-          x=0;
-      }
-  }
-  ledMatrix.updateDisplay();
+
+    // Clear background
+    //matrix.fillScreen(0);
+
+    //matrix.setCursor(0, 0);
+    //matrix.print(F2(str));
+
+    // Update display
+    matrix.updateDisplay();
 }
 

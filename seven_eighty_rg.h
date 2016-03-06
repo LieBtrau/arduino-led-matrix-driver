@@ -18,8 +18,6 @@ public:
       GREEN,
       BLACK
     } COLOR;
-    const byte WIDTH=80;
-    const byte HEIGHT=7;
     seven_eighty_rg(byte a, byte b, byte c, byte ss, boolean dbuf);
     void begin();
     void drawPixel(int16_t x, int16_t y, uint16_t c);
