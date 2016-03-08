@@ -29,12 +29,19 @@ public:
     byte* *backBuffer(void);
 private:
     static const byte VIDEOBUFFSIZE=140;
+    static const byte BYTESPERROW=20;
+    static const byte ROWCOUNT=7;
     byte Apin,Bpin,Cpin, SSpin;
     byte* matrixbuff[2];
     volatile byte backindex;
     volatile boolean swapflag;
     volatile uint8_t *buffptr;
-    byte ctr;
+    byte row;
+    volatile byte
+      *addraport, *addrbport, *addrcport;
+    uint8_t
+      addrapin, addrbpin, addrcpin;
+
 };
 
 #endif // SEVEN_EIGHTY_RG_H

@@ -6,7 +6,7 @@ static seven_eighty_rg *activePanel = NULL;
 
 seven_eighty_rg::seven_eighty_rg(byte a, byte b, byte c, byte ss, boolean dbuf) :
     Apin(a), Bpin(b), Cpin(c), SSpin(ss),
-    Adafruit_GFX(80, 7)
+    Adafruit_GFX(80, ROWCOUNT)
 {
     // Allocate and initialize matrix buffer:
     int allocsize = (dbuf == true) ? (VIDEOBUFFSIZE * 2) : VIDEOBUFFSIZE;
@@ -14,6 +14,12 @@ seven_eighty_rg::seven_eighty_rg(byte a, byte b, byte c, byte ss, boolean dbuf) 
     memset(matrixbuff[0], 0, allocsize);
     // If not double-buffered, both buffers then point to the same address:
     matrixbuff[1] = (dbuf == true) ? &matrixbuff[0][VIDEOBUFFSIZE] : matrixbuff[0];
+    addraport = portOutputRegister(digitalPinToPort(a));
+    addrapin  = digitalPinToBitMask(a);
+    addrbport = portOutputRegister(digitalPinToPort(b));
+    addrbpin  = digitalPinToBitMask(b);
+    addrcport = portOutputRegister(digitalPinToPort(c));
+    addrcpin  = digitalPinToBitMask(c);
 }
 
 void seven_eighty_rg::begin(void)
@@ -40,40 +46,38 @@ void seven_eighty_rg::drawPixel(int16_t x, int16_t y, uint16_t c)
     if ((x < 0) || (x >= _width) || (y < 0) || (y >= _width)) return;
     if (c & 1)
     {
-        bitSet(matrixbuff[backindex][y*20 + ((x >> 3)<<1)], x & 0x7);
+        bitSet(matrixbuff[backindex][y*BYTESPERROW + ((x >> 3)<<1)], x & 0x7);
     } else
     {
-        bitClear(matrixbuff[backindex][y*20 + ((x >> 3)<<1)], x & 0x7);
+        bitClear(matrixbuff[backindex][y*BYTESPERROW + ((x >> 3)<<1)], x & 0x7);
     }
     if (c & 2)
     {
-        bitSet(matrixbuff[backindex][y*20 + ((x >> 2) | 1)], x & 0x7);
+        bitSet(matrixbuff[backindex][y*BYTESPERROW + ((x >> 2) | 1)], x & 0x7);
     } else
     {
-        bitClear(matrixbuff[backindex][y*20 + ((x >> 2) | 1)], x & 0x7);
+        bitClear(matrixbuff[backindex][y*BYTESPERROW + ((x >> 2) | 1)], x & 0x7);
     }
 }
 
 void seven_eighty_rg::fillscreen(word c) {
-    for (byte i = 0; i < 7; i++)
+    for (byte i = 0; i < VIDEOBUFFSIZE; i++)
     {
-        for (byte j = 0; j < 20; j++) {
             switch (c)
             {
             case ORANGE:
-                matrixbuff[backindex][20*i+j] = 0x00;
+                matrixbuff[backindex][i] = 0x00;
                 break;
             case RED:
-                matrixbuff[backindex][20*i+j] = (j & 0x1 ? 0x00 : 0xFF);
+                matrixbuff[backindex][i] = (i & 0x1 ? 0x00 : 0xFF);
                 break;
             case GREEN:
-                matrixbuff[backindex][20*i+j] = (j & 0x1 ? 0xFF : 0x00);
+                matrixbuff[backindex][i] = (i & 0x1 ? 0xFF : 0x00);
                 break;
             case BLACK:
-                matrixbuff[backindex][20*i+j] = 0xFF;
+                matrixbuff[backindex][i] = 0xFF;
                 break;
             }
-        }
     }
 }
 
@@ -91,25 +95,30 @@ void seven_eighty_rg::swapBuffers(boolean copy) {
 
 void seven_eighty_rg::updateDisplay()
 {
-    ctr++;
-    if (ctr > 6)
+    row++;
+    if (row >= ROWCOUNT)
     {
-        ctr = 0;
+        row = 0;
     }
     if(swapflag == true) {    // Swap front/back buffers if requested
         backindex = 1 - backindex;
         swapflag  = false;
     }
-    buffptr = matrixbuff[1-backindex]+ctr*20;
+    buffptr = matrixbuff[1-backindex]+row*BYTESPERROW;
     SPI.beginTransaction(SPISettings(1000000, LSBFIRST, SPI_MODE0));
     bitClear(PORTD,SSpin);
-    for (byte i = 0; i < 20; i++) {
+    for (byte i = 0; i < BYTESPERROW; i++) {
         SPI.transfer(buffptr[i]);
     }
     bitSet(PORTD,SSpin);
     SPI.endTransaction();
     //Enable display row
-    PORTD= (PORTD & 0x80) | ((ctr&7)<<4) | (PORTD & 0x0F);
+    if(row & 0x1)   *addraport |=  addrapin;
+    else            *addraport &= ~addrapin;
+    if(row & 0x2)   *addrbport |=  addrbpin;
+    else            *addrbport &= ~addrbpin;
+    if(row & 0x4)   *addrcport |=  addrcpin;
+    else            *addrcport &= ~addrcpin;
 }
 
 // -------------------- Interrupt handler stuff --------------------
