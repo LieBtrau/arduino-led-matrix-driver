@@ -8,12 +8,9 @@
 seven_eighty_rg matrix(4,5,6,7, false);
 const char str[] PROGMEM = "Adafruit 16x32 RGB LED Matrix";
 
-//Dpin must be kept low at all times to enable LEDs
+
 
 void setup() {
-    // put your setup code here, to run once:
-    Serial.begin(9600);
-    Serial.println("Started");
     matrix.begin();
     matrix.setTextWrap(false); // Allow text to run off right edge
     matrix.setTextSize(1);
@@ -24,15 +21,49 @@ void setup() {
     matrix.drawChar(0, 0, 'a',matrix.ORANGE, matrix.BLACK, 1);
 }
 
+void rotatingBar()
+{
+    static byte x1, y1, state;
+    static unsigned long timer=0;
+
+    if(millis()>timer+2)
+    {
+        matrix.fillscreen(matrix.BLACK);
+        matrix.drawLine(x1,y1,matrix.width()-x1-1,matrix.height()-y1-1,state ? matrix.RED : matrix.ORANGE);
+        switch(state)
+        {
+        case 0:
+            x1++;
+            if(x1>=matrix.width())
+            {
+                x1=matrix.width()-1;
+                state=1;
+            }
+            break;
+        case 1:
+            y1++;
+            if(y1>=matrix.height())
+            {
+                y1=0;
+                x1=0;
+                state=0;
+            }
+            break;
+        default:
+            state=0;
+            break;
+        }
+        timer=millis();
+    }
+}
 
 void loop() {
-
+    rotatingBar();
     // Clear background
     //matrix.fillScreen(0);
 
     //matrix.setCursor(0, 0);
     //matrix.print(F2(str));
 
-    // Update display
 }
 

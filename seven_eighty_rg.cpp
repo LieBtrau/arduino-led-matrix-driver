@@ -34,8 +34,9 @@ void seven_eighty_rg::begin(void)
     SPI.begin();
     activePanel = this;                      // For interrupt hander
     // Set up Timer1 for interrupt:
-    TCCR1B  = _BV(WGM13) | _BV(WGM12) | _BV(CS10); // Mode 12, no prescale
-    ICR1    = 10000; //freq  = 16MHz / (ICR1+1)
+    TCCR1A  = _BV(WGM11); // Mode 14 (fast PWM), OC1A off
+    TCCR1B  = _BV(WGM13) | _BV(WGM12) | _BV(CS10); // Mode 14, no prescale
+    ICR1    = 10000;//160Hz row refresh rate
     TIMSK1 |= _BV(TOIE1); // Enable Timer1 interrupt
     sei();                // Enable global interrupts
     fillscreen(BLACK);
