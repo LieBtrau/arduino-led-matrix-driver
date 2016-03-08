@@ -1,3 +1,5 @@
+//Based on: https://github.com/adafruit/RGB-matrix-Panel
+
 #ifndef SEVEN_EIGHTY_RG_H
 #define SEVEN_EIGHTY_RG_H
 //#if ARDUINO >= 100
@@ -26,10 +28,12 @@ public:
     void swapBuffers(boolean);
     byte* *backBuffer(void);
 private:
+    static const byte VIDEOBUFFSIZE=140;
     byte Apin,Bpin,Cpin, SSpin;
     byte* matrixbuff[2];
     volatile byte backindex;
     volatile boolean swapflag;
+    volatile uint8_t *buffptr;
     byte ctr;
 };
 
