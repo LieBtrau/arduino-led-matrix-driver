@@ -5,7 +5,9 @@ Arduino driver for 7x80 Red/Green LED matrix.  The code has been developed for a
 ## Signal connections
 The LED matrix is interfaced through the SPI-bus.
 You'll have to connect the following:   
+
 | Signal name | LED matrix          | Arduino Uno |
+|-------------|---------------------|-------------|
 | GND         | JP2.19 (next to IR) | ICSP.6      |
 | MOSI        | JP2.14 (DATA)       | ICSP.4      |
 | SCLK        | JP2.12 (CLK)        | ICSP.3      |
@@ -21,4 +23,3 @@ Use 2.5mm plug P1 on the LED matrix to supply it with 5V.
 
 # Firmware
 This library is heavily based on the [Adafruit RGB matrix panel driver](https://github.com/adafruit/RGB-matrix-Panel).  The driver implements the low level functionality for the [Adafruit GFX library](https://github.com/adafruit/Adafruit-GFX-Library), which allows you to draw graphical objects such as lines, circles, rectangles, ... and of course text.
-
