@@ -2,6 +2,7 @@
 #include "SPI.h"
 
 byte mem[7][20];// 7 rows, 80 bits = 10 bytes green, 80 bits = 10 bytes red
+static seven_eighty_rg *activePanel = NULL;
 
 seven_eighty_rg::seven_eighty_rg(byte a, byte b, byte c, byte ss, boolean dbuf) :
     Apin(a), Bpin(b), Cpin(c), SSpin(ss),
@@ -16,6 +17,12 @@ void seven_eighty_rg::begin(void)
     pinMode(Bpin, OUTPUT);
     pinMode(Cpin, OUTPUT);
     SPI.begin();
+    activePanel = this;                      // For interrupt hander
+    // Set up Timer1 for interrupt:
+    TCCR1B  = _BV(WGM13) | _BV(WGM12) | _BV(CS10); // Mode 12, no prescale
+    ICR1    = 10000; //freq  = 16MHz / (ICR1+1)
+    TIMSK1 |= _BV(TOIE1); // Enable Timer1 interrupt
+    sei();                // Enable global interrupts
     fillscreen(BLACK);
 }
 
@@ -77,5 +84,14 @@ void seven_eighty_rg::updateDisplay()
     }
     bitSet(PORTD,SSpin);
     SPI.endTransaction();
+    //Enable display row
     PORTD= (PORTD & 0x80) | ((ctr&7)<<4) | (PORTD & 0x0F);
 }
+
+// -------------------- Interrupt handler stuff --------------------
+
+ISR(TIMER1_OVF_vect, ISR_BLOCK) { // ISR_BLOCK important -- see notes later
+  activePanel->updateDisplay();   // Call refresh func for active display
+  TIFR1 |= TOV1;                  // Clear Timer1 interrupt flag
+}
+

@@ -34,6 +34,5 @@ void loop() {
     //matrix.print(F2(str));
 
     // Update display
-    matrix.updateDisplay();
 }
 
