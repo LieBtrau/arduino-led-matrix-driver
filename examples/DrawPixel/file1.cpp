@@ -57,8 +57,21 @@ void rotatingBar()
     }
 }
 
+void counter()
+{
+    static unsigned long ultime=millis();
+    static byte ctr=0;
+    if(millis()>ultime+500)
+    {
+        ultime=millis();
+        matrix.drawChar(6,0,'0'+ctr,matrix.ORANGE, matrix.BLACK,1);
+        ctr=ctr<9 ? ctr+1 : 0;
+    }
+}
+
 void loop() {
-    rotatingBar();
+    counter();
+    //rotatingBar();
     // Clear background
     //matrix.fillScreen(0);
 
