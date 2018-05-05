@@ -1,7 +1,6 @@
 //Based on: https://github.com/adafruit/RGB-matrix-Panel
 
-#ifndef SEVEN_EIGHTY_RG_H
-#define SEVEN_EIGHTY_RG_H
+#pragma once
 //#if ARDUINO >= 100
  #include "Arduino.h"
 //#else
@@ -37,11 +36,14 @@ private:
     volatile boolean swapflag;
     volatile uint8_t *buffptr;
     byte row;
+
+#ifdef ARDUINO_ARCH_AVR
     volatile byte
+#elif ARDUINO_ARCH_STM32F1
+    volatile uint32
+#endif
       *addraport, *addrbport, *addrcport;
     uint8_t
       addrapin, addrbpin, addrcpin;
-
+    byte dim=0;
 };
-
-#endif // SEVEN_EIGHTY_RG_H

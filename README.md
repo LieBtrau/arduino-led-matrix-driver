@@ -1,21 +1,25 @@
 # arduino-led-matrix-driver
-Arduino driver for 7x80 Red/Green LED matrix.  The code has been developed for an M500-7X80RG, version 4.3 PCB.  I guess it's compatible for comparable 7X80 Red/Geen matrices.
+Arduino driver for 7x80 Red/Green LED matrix.  The code has been developed for an M500-7X80RG, version 4.3 PCB.  I guess it's compatible for comparable 7X80 Red/Green matrices.
+
+# Supported architectures
+* AVR
+* STM32
 
 # Connections to Arduino Uno
 ## Signal connections
 The LED matrix is interfaced through the SPI-bus.
 You'll have to connect the following:   
 
-| Signal name | LED matrix          | Arduino Uno  |
-|-------------|---------------------|--------------|
-| GND         | JP2.19 (next to IR) | ICSP.6 / GND |
-| MOSI        | JP2.14 (DATA)       | ICSP.4 / 11  |
-| SCLK        | JP2.12 (CLK)        | ICSP.3 / 13  |
-| /CS         | JP2.10 (STB)        | any GPIO     |
-| D           | JP2.8  (D)          | GND          |
-| C           | JP2.6  (C)          | any GPIO     |
-| B           | JP2.4  (B)          | any GPIO     |
-| A           | JP2.2  (A)          | any GPIO     |
+| Signal name | LED matrix          | Arduino Uno  | Adafruit ProTrinket |
+|-------------|---------------------|--------------|---------------------|
+| GND         | JP2.19 (next to IR) | ICSP.6 / GND | G			 |
+| MOSI        | JP2.14 (DATA)       | ICSP.4 / 11  | 11			 |
+| SCLK        | JP2.12 (CLK)        | ICSP.3 / 13  | 13			 |
+| /CS         | JP2.10 (STB)        | any GPIO     | 10			 |
+| D           | JP2.8  (D)          | GND          | G			 |
+| C           | JP2.6  (C)          | any GPIO     | any GPIO		 |
+| B           | JP2.4  (B)          | any GPIO     | any GPIO		 |
+| A           | JP2.2  (A)          | any GPIO     | any GPIO		 |
 
 ## Power connections
 When all LEDs are on, the LED matrix draws about 4A.  Your Arduino can't supply that.
