@@ -1,5 +1,5 @@
 .
 /home/ctack/Programs/arduino-1.6.5/hardware/arduino/avr/cores/arduino
-/home/ctack/Arduino/libraries/Adafruit-GFX-Library
+/home/ctack/Arduino/libraries/Adafruit_GFX_Library
 examples/DrawPixel
 examples/VehicleBackLight
