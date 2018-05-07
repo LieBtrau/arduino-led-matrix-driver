@@ -26,22 +26,18 @@ typedef struct
 GROWING_CIRCLE gc[4]={ {4,3,0,3,seven_eighty_rg::ORANGE,0}, {4,3,2,3,seven_eighty_rg::RED,0},
                        {75,3,0,3,seven_eighty_rg::ORANGE,0}, {75,3,2,3,seven_eighty_rg::RED,0} };
 
-void setup() {
+void setup()
+{
     Serial.begin(9600);
     matrix.begin();
     matrix.setTextWrap(false); // Allow text to run off right edge
     matrix.setTextSize(1);
     matrix.setTextColor(matrix.ORANGE);
-    //    matrix.drawLine(0,0,79,6,matrix.RED);
-    //matrix.setFont(&TomThumb);
-    //matrix.setFont(&Tiny3x3a2pt7b);
-    //    matrix.setFont(&Picopixel);
-    //    matrix.drawChar(0, 7, 'a',matrix.ORANGE, matrix.BLACK, 1);
 }
 
 void loop()
 {
-    infiniteScrollingText(str);
+    infiniteScrollingText(str, 11, 9);
     for(byte i=0;i<4; i++)
     {
         growingCircles(&gc[i]);
@@ -58,26 +54,28 @@ void growingCircles(GROWING_CIRCLE* gc)
     }
 }
 
-void infiniteScrollingText(char* string)
+void infiniteScrollingText(char* string, byte cursorXoffset,byte scrollCharLength)
 {
     static unsigned long ulTime=0;
     static const byte CHAR_WIDTH=6;
-    static const byte CURSORX_OFFSET=9;
     static int cursorX=CHAR_WIDTH-1;
     static int offset=0;
     int msgLen=strlen(string);
-    if(millis()>ulTime+50)
+    char strShow[msgLen];
+    if(millis()>ulTime+30)
     {
         ulTime=millis();
-        matrix.fillScreen(seven_eighty_rg::BLACK);
-        matrix.setCursor(CURSORX_OFFSET+cursorX,0);
+        matrix.fillRect(9,0, 62,7,seven_eighty_rg::BLACK);
+        matrix.setCursor(cursorXoffset+cursorX,0);
+        strncpy(strShow, string+offset, msgLen);
+        strncpy(strShow+msgLen-offset, string, offset);
+        strShow[scrollCharLength>msgLen-1?msgLen-1:scrollCharLength]='\0';
+        matrix.print(strShow);
         cursorX=(cursorX==0?CHAR_WIDTH-1:cursorX-1);
-        matrix.print(string+offset);
         if(cursorX==CHAR_WIDTH-1)
         {
             offset=(offset==msgLen-1?0:offset+1);
         }
-        matrix.print(string);
     }
 }
 
