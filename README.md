@@ -1,5 +1,5 @@
 # arduino-led-matrix-driver
-Arduino driver for 7x80 Red/Green LED matrix.  The code has been developed for an M500-7X80RG, version 4.3 PCB.  I guess it's compatible for comparable 7X80 Red/Geen matrices.
+Arduino driver for 7x80 Red/Green LED matrix.  The code has been developed for an M500-7X80RG, version 4.3 PCB.  I guess it's compatible for comparable 7X80 Red/Green matrices.
 
 # Connections to Arduino Uno
 ## Signal connections
