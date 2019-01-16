@@ -3,3 +3,4 @@ seven_eighty_rg.cpp
 examples/DrawPixel/DrawPixel.ino
 examples/DrawPixel/file1.cpp
 examples/VehicleBackLight/VehicleBackLight.ino
+examples/VehicleBackLight/sprites.h

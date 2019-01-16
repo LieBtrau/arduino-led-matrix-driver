@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE QtCreatorProject>
-<!-- Written by QtCreator 3.5.1, 2018-05-05T21:49:57. -->
+<!-- Written by QtCreator 3.5.1, 2018-06-21T19:37:22. -->
 <qtcreator>
  <data>
   <variable>EnvironmentId</variable>
@@ -8,7 +8,7 @@
  </data>
  <data>
   <variable>ProjectExplorer.Project.ActiveTarget</variable>
-  <value type="int">0</value>
+  <value type="int">1</value>
  </data>
  <data>
   <variable>ProjectExplorer.Project.EditorSettings</variable>
@@ -293,7 +293,7 @@
       <value type="bool" key="ProjectExplorer.BuildStep.Enabled">true</value>
       <value type="QString" key="ProjectExplorer.ProcessStep.Arguments">-build-path=%{buildDir} -warnings=none -verbose -build-options-file=&quot;./build.options.json&quot; DrawPixel.ino --verbose</value>
       <value type="QString" key="ProjectExplorer.ProcessStep.Command">$HOME/Programs/arduino-1.8.5/arduino-builder</value>
-      <value type="QString" key="ProjectExplorer.ProcessStep.WorkingDirectory">/home/ctack/git/arduino-led-matrix-driver/examples/DrawPixel</value>
+      <value type="QString" key="ProjectExplorer.ProcessStep.WorkingDirectory">$HOME/git/arduino-led-matrix-driver/examples/DrawPixel</value>
       <value type="QString" key="ProjectExplorer.ProjectConfiguration.DefaultDisplayName">Custom Process Step</value>
       <value type="QString" key="ProjectExplorer.ProjectConfiguration.DisplayName"></value>
       <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">ProjectExplorer.ProcessStep</value>

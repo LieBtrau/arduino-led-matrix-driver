@@ -6,8 +6,7 @@ static seven_eighty_rg *activePanel = NULL;
 static void update();
 
 seven_eighty_rg::seven_eighty_rg(byte a, byte b, byte c, byte ss, boolean dbuf) :
-    Apin(a), Bpin(b), Cpin(c), SSpin(ss),
-    Adafruit_GFX(80, ROWCOUNT)
+    Adafruit_GFX(80, ROWCOUNT), Apin(a), Bpin(b), Cpin(c), SSpin(ss)
 {
     // Allocate and initialize matrix buffer:
     int allocsize = (dbuf == true) ? (VIDEOBUFFSIZE * 2) : VIDEOBUFFSIZE;
