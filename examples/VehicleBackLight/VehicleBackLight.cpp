@@ -14,36 +14,39 @@ typedef struct
     seven_eighty_rg::COLOR color;
     unsigned long ultime;
 }GROWING_CIRCLE;
-
+enum State { waiting, on} state;
+enum LowVoltageState { measuring, buzzerOn, buzzerOff} lvState;
 void initAnalogComparator();
 void growingCircles(GROWING_CIRCLE* gc);
 void infiniteScrollingText(const char* string, byte cursorXoffset,byte scrollCharLength);
+void lowVoltageDetector();
 
 GROWING_CIRCLE gc[4]={ {4,3,0,3,seven_eighty_rg::ORANGE,0}, {4,3,2,3,seven_eighty_rg::RED,0},
                        {75,3,0,3,seven_eighty_rg::ORANGE,0}, {75,3,2,3,seven_eighty_rg::RED,0} };
-seven_eighty_rg matrix(A3,A2,A1,10, false);
+seven_eighty_rg matrix(A3,A2,A1,10, true);
 const char str[] /*PROGMEM*/ = "# BABY ON BOARD ";
 const byte SWITCH_PIN = 8;
-const byte NFET_PIN = 6;
-const byte LED_PIN = 5;
+const byte TRANSISTOR_PIN = 7;
+const byte LED_PIN = 9;
 Bounce debouncer = Bounce();
-static byte state = 0;
 
 void setup()
 {
     pinMode(SWITCH_PIN, INPUT_PULLUP);
     debouncer.attach(SWITCH_PIN);
     debouncer.interval(50); // interval in ms
-    pinMode(NFET_PIN, OUTPUT);
-    digitalWrite(NFET_PIN, HIGH);
+    pinMode(TRANSISTOR_PIN, OUTPUT);
+    digitalWrite(TRANSISTOR_PIN, HIGH);
     pinMode(LED_PIN, OUTPUT);
     analogReference(INTERNAL);
     Serial.begin(9600);
-    //initAnalogComparator();
+    initAnalogComparator();
     matrix.begin();
     matrix.setTextWrap(false); // Allow text to run off right edge
     matrix.setTextSize(1);
     matrix.setTextColor(matrix.ORANGE);
+    state=waiting;
+    lvState=measuring;
 }
 
 void loop()
@@ -51,30 +54,26 @@ void loop()
     debouncer.update();
     switch (state)
     {
-    case 0:
+    case waiting:
         if (debouncer.read())
         {
-            state = 1;
+            state = on;
         }
         break;
-    case 1:
+    case on:
         if (!debouncer.read())
         {
-            digitalWrite(NFET_PIN, LOW);
+            digitalWrite(TRANSISTOR_PIN, LOW);
+        }
+        infiniteScrollingText(str, 11, 9);
+        for(byte i=0;i<4; i++)
+        {
+            growingCircles(&gc[i]);
         }
         break;
     }
-   infiniteScrollingText(str, 11, 9);
-   for(byte i=0;i<4; i++)
-   {
-       growingCircles(&gc[i]);
-   }
+    lowVoltageDetector();
 //    showPacman();
-    // if(!bitRead(ACSR, ACO))         //  check status of comparator output flag
-    // {
-    //     //Voltage too low!  Start beeping
-    // }
-    digitalWrite(LED_PIN, analogRead(A0) < 100 ? HIGH : LOW);
 }
 
 void showPacman()
@@ -94,10 +93,11 @@ void showPacman()
 
 void growingCircles(GROWING_CIRCLE* gc)
 {
-    if(millis()>gc->ultime+100)
+    if(millis()>gc->ultime+00)
     {
         gc->ultime=millis();
         gc->radius = gc->radius > gc->maxRadius ? 0 : gc->radius+1;
+        matrix.fillRect(gc->centerX-4,0, gc->centerX+4,7,seven_eighty_rg::BLACK);
         matrix.drawCircle(gc->centerX, gc->centerY, gc->radius, gc->color);
     }
 }
@@ -113,7 +113,8 @@ void infiniteScrollingText(const char* string, byte cursorXoffset,byte scrollCha
     if(millis()>ulTime+30)
     {
         ulTime=millis();
-        matrix.fillRect(9,0, 62,7,seven_eighty_rg::BLACK);
+        matrix.fillRect(8,0, 63,7,seven_eighty_rg::BLACK);
+        //matrix.fillScreen(seven_eighty_rg::BLACK);
         matrix.setCursor(cursorXoffset+cursorX,0);
         strncpy(strShow, string+offset, msgLen);
         strncpy(strShow+msgLen-offset, string, offset);
@@ -124,6 +125,7 @@ void infiniteScrollingText(const char* string, byte cursorXoffset,byte scrollCha
         {
             offset=(offset==msgLen-1?0:offset+1);
         }
+        matrix.swapBuffers(false);
     }
 }
 
@@ -136,4 +138,39 @@ void initAnalogComparator()
     bitSet(ACSR, ACBG);         // Analog Comparator Bandgap Select: 1.1Vref is applied to the positive input of the Analog Comparator
     bitClear(ACSR, ACIE);       // Analog Comparator Interrupt: Disabled
     bitClear(ACSR, ACIC);       // Analog Comparator Input Capture: Disabled
+}
+
+void lowVoltageDetector()
+{
+    const int VSUP_3350mV = 560;
+    // if(!bitRead(ACSR, ACO))         //  check status of comparator output flag
+    // {
+    //     //Voltage too low!  Start beeping
+    // }
+    //digitalWrite(LED_PIN, analogRead(A0) < 10 ? HIGH : LOW);
+    static unsigned long ulTime=0;
+    if(millis()<ulTime+500)
+    {
+        return;
+    }
+    ulTime=millis();
+    switch (lvState)
+    {
+        case measuring:
+            if(analogRead(A0)<VSUP_3350mV)
+            {
+                lvState=buzzerOn;
+            }
+            break;
+        case buzzerOn:
+            digitalWrite(LED_PIN, HIGH);
+            lvState=buzzerOff;
+            break;
+        case buzzerOff:
+            digitalWrite(LED_PIN, LOW);
+            lvState=buzzerOn;
+            break;
+        default:
+            break;
+    }
 }

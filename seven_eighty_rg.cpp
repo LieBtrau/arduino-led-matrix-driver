@@ -37,7 +37,7 @@ void seven_eighty_rg::begin(void)
     // Set up Timer1 for interrupt:
     TCCR1A  = _BV(WGM11); // Mode 14 (fast PWM), OC1A off
     TCCR1B  = _BV(WGM13) | _BV(WGM12) | _BV(CS10); // Mode 14, no prescale
-    ICR1    = 10000;//160Hz row refresh rate
+    ICR1    = 10000;
     TIMSK1 |= _BV(TOIE1); // Enable Timer1 interrupt
     sei();                // Enable global interrupts
 #elif ARDUINO_ARCH_STM32F1
