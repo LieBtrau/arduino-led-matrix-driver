@@ -28,6 +28,7 @@ const char str[] /*PROGMEM*/ = "# BABY ON BOARD ";
 const byte SWITCH_PIN = 8;
 const byte TRANSISTOR_PIN = 7;
 const byte LED_PIN = 9;
+const unsigned long TIMEOUT_45MINS = 2700000;
 Bounce debouncer = Bounce();
 
 void setup()
@@ -61,7 +62,7 @@ void loop()
         }
         break;
     case on:
-        if (!debouncer.read())
+        if (!debouncer.read() || millis() > TIMEOUT_45MINS)
         {
             digitalWrite(TRANSISTOR_PIN, LOW);
         }
